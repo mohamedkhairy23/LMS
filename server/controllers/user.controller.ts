@@ -7,6 +7,7 @@ import jwt, { Secret } from "jsonwebtoken";
 import ejs from "ejs";
 import path from "path";
 import sendMail from "../utils/sendMail";
+import { sendToken } from "../utils/jwt";
 
 // @desc     Register user
 // @route    Post /api/v1/register
@@ -81,7 +82,7 @@ export const createActivationToken = (user: any): IActivationToken => {
 };
 
 // @desc     Activate user
-// @route    Post /api/v1/register
+// @route    Post /api/v1/activate-user
 // @access   Public
 interface IActivationRequest {
   activation_token: string;
@@ -120,5 +121,60 @@ export const activateUser = CatchAsyncError(
         data: user,
       });
     } catch (error: any) {}
+  }
+);
+
+// @desc     Login user
+// @route    Post /api/v1/login
+// @access   Public
+interface ILoginRequest {
+  email: string;
+  password: string;
+}
+export const login = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, password } = req.body as ILoginRequest;
+
+      if (!email || !password) {
+        return next(
+          new ErrorHandler(`Please provide an email and password`, 400)
+        );
+      }
+
+      const user = await userModel.findOne({ email }).select("+password");
+
+      if (!user) {
+        return next(new ErrorHandler(`Invalid email or password`, 401));
+      }
+
+      const isMatch = await user.comparePassword(password);
+
+      if (!isMatch) {
+        return next(new ErrorHandler(`Invalid email or password`, 401));
+      }
+
+      sendToken(user, 200, res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// @desc     Logout user
+// @route    Post /api/v1/logout
+// @access   Public
+export const logout = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.cookie("access_token", "", { maxAge: 1 });
+      res.cookie("refresh_token", "", { maxAge: 1 });
+      res.status(200).json({
+        success: true,
+        message: "Logged Out Successfully",
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
   }
 );
