@@ -14,6 +14,7 @@ import {
 } from "../utils/jwt";
 import { redis } from "../utils/redis";
 import { getUserById } from "../services/user.service";
+import cloudinary from "cloudinary";
 
 // @desc     Register user
 // @route    POST /api/v1/register
@@ -324,7 +325,9 @@ export const updateUserInfo = CatchAsyncError(
   }
 );
 
-// update user password
+// @desc     Update user password
+// @route    POST /api/v1/update-user-password
+// @access   Private
 interface IUpdatePassword {
   oldPassword: string;
   newPassword: string;
@@ -357,6 +360,61 @@ export const updatePassword = CatchAsyncError(
       await redis.set(req.user?._id, JSON.stringify(user));
 
       res.status(201).json({
+        success: true,
+        user,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// @desc     Update profile picture
+// @route    POST /api/v1/update-profile-picture
+// @access   Private
+interface IUpdateProfilePicture {
+  avatar: string;
+}
+export const updateProfilePicture = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { avatar } = req.body as IUpdateProfilePicture;
+
+      const userId = req.user?._id;
+      const user = await userModel.findById(userId);
+
+      if (avatar && user) {
+        // if we have one avatar then call this if
+        if (user?.avatar?.public_id) {
+          // first delete the old image
+          await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+
+          const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+            folder: "avatars",
+            width: 150,
+          });
+
+          user.avatar = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+          };
+        } else {
+          const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+            folder: "avatars",
+            width: 150,
+          });
+
+          user.avatar = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+          };
+        }
+      }
+
+      await user?.save();
+      await redis.set(userId, JSON.stringify(user));
+
+      res.status(200).json({
         success: true,
         user,
       });
