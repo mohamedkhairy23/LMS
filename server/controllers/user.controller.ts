@@ -13,9 +13,10 @@ import {
   sendToken,
 } from "../utils/jwt";
 import { redis } from "../utils/redis";
+import { getUserById } from "../services/user.service";
 
 // @desc     Register user
-// @route    Post /api/v1/register
+// @route    POST /api/v1/register
 // @access   Public
 interface IRegistrationBody {
   name: string;
@@ -130,7 +131,7 @@ export const activateUser = CatchAsyncError(
 );
 
 // @desc     Login user
-// @route    Post /api/v1/login
+// @route    POST /api/v1/login
 // @access   Public
 interface ILoginRequest {
   email: string;
@@ -167,8 +168,8 @@ export const login = CatchAsyncError(
 );
 
 // @desc     Logout user
-// @route    Post /api/v1/logout
-// @access   Public
+// @route    GET /api/v1/logout
+// @access   Private
 export const logout = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -188,7 +189,9 @@ export const logout = CatchAsyncError(
   }
 );
 
-// update access token
+// @desc     Refresh user token
+// @route    GET /api/v1/refresh
+// @access   Public
 export const updateAccessToken = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -233,6 +236,45 @@ export const updateAccessToken = CatchAsyncError(
         status: "Success",
         accessToken,
       });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// @desc     Get logged in user info
+// @route    GET /api/v1/me
+// @access   Private
+export const getUserInfo = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user?._id;
+      getUserById(userId, res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// @desc     Social auth
+// @route    POST /api/v1/social-auth
+// @access   Private
+interface ISocialAuthBody {
+  email: string;
+  name: string;
+  avatar: string;
+}
+export const socialAuth = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, name, avatar } = req.body as ISocialAuthBody;
+      const user = await userModel.findOne({ email });
+      if (!user) {
+        const newUser = await userModel.create({ email, name, avatar });
+        sendToken(newUser, 200, res);
+      } else {
+        sendToken(user, 200, res);
+      }
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
