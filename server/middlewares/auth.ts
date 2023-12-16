@@ -42,7 +42,7 @@ export const authorizeRoles = (...roles: string[]) => {
       return next(
         new ErrorHandler(
           `User role ${req.user?.role} is unauthorized to access this route`,
-          401
+          403
         )
       );
     }
