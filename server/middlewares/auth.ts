@@ -11,7 +11,7 @@ export const isAuthenticated = CatchAsyncError(
 
     if (!access_token) {
       return next(
-        new ErrorHandler("Please login to access this resource", 401)
+        new ErrorHandler("Please login to access this resource", 400)
       );
     }
 
@@ -21,12 +21,12 @@ export const isAuthenticated = CatchAsyncError(
     ) as JwtPayload;
 
     if (!decoded) {
-      return next(new ErrorHandler("Access token is ot valid", 401));
+      return next(new ErrorHandler("Access token is ot valid", 400));
     }
 
     const user = await redis.get(decoded.id);
     if (!user) {
-      return next(new ErrorHandler("User not found", 401));
+      return next(new ErrorHandler("User not found", 400));
     }
 
     // logged in user type added globally in @types/custom.d.ts
