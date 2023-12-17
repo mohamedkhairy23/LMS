@@ -144,7 +144,7 @@ export const getAllCourses = CatchAsyncError(
   }
 );
 
-// @desc     Get course content ==> Only for valid user
+// @desc     Get a course content for logged in user ==> Only for valid user
 // @route    GET /api/v1/get-course-content/:id
 // @access   Private
 export const getCourseByUser = CatchAsyncError(
