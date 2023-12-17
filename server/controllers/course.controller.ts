@@ -33,7 +33,7 @@ export const addCourse = CatchAsyncError(
 );
 
 // @desc     Update course
-// @route    POST /api/v1/edit-course/:id
+// @route    PUT /api/v1/edit-course/:id
 // @access   Private("admin")
 export const editCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -66,6 +66,44 @@ export const editCourse = CatchAsyncError(
       res.status(201).json({
         success: true,
         course,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+// @desc     Get single course without purchasing
+// @route    GET /api/v1/get-course/:id
+// @access   Public
+export const getSingleCourse = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const course = await CourseModel.findById(req.params.id).select(
+        "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
+      );
+      res.status(200).json({
+        success: true,
+        course,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+// @desc     Get all courses without purchasing
+// @route    GET /api/v1/get-courses
+// @access   Public
+export const getAllCourses = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const courses = await CourseModel.find().select(
+        "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
+      );
+      res.status(200).json({
+        success: true,
+        courses,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
