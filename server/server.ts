@@ -1,4 +1,6 @@
 import { app } from "./app";
+import colors from "colors";
+colors.enable();
 import { v2 as cloudinary } from "cloudinary";
 import connectDB from "./utils/db";
 require("dotenv").config();
@@ -11,6 +13,6 @@ cloudinary.config({
 });
 
 app.listen(process.env.PORT, () => {
-  console.log(`server is running on port ${process.env.PORT}`);
+  console.log(`server is running on port ${process.env.PORT}`.yellow.underline);
   connectDB();
 });
