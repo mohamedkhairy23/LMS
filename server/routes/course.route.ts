@@ -3,6 +3,7 @@ import {
   addCourse,
   editCourse,
   getAllCourses,
+  getCourseByUser,
   getSingleCourse,
 } from "../controllers/course.controller";
 import { authorizeRoles, isAuthenticated } from "../middlewares/auth";
@@ -22,5 +23,6 @@ courseRouter.put(
 );
 courseRouter.get("/get-course/:id", getSingleCourse);
 courseRouter.get("/get-courses", getAllCourses);
+courseRouter.get("/get-course-content/:id", isAuthenticated, getCourseByUser);
 
 export default courseRouter;
