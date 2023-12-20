@@ -128,7 +128,7 @@ const courseSchema = new Schema<ICourse>({
   },
   purchased: {
     type: Number,
-    default: 0,
+    default: 1,
   },
 });
 
