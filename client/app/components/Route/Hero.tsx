@@ -7,8 +7,8 @@ type Props = {};
 
 const Hero: FC<Props> = (props) => {
   return (
-    <section className="bg-white dark:bg-gray-900 h-full min-h-screen pt-20">
-      <div className="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
+    <section className="bg-slate-100 dark:bg-gray-900 h-full min-h-screen pt-20">
+      <div className="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12 items-center justify-center">
         <div className="mr-auto place-self-center lg:col-span-7">
           <h1 className="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
             Improve Your Online Learning Experience Better Instantly
@@ -52,7 +52,7 @@ const Hero: FC<Props> = (props) => {
         <div className="hidden lg:mt-0 lg:col-span-5 lg:flex">
           <Image
             className="rounded"
-            src={require("../../../public/assets/hero2.png")}
+            src={require("../../../public/assets/hero.svg")}
             alt="mockup"
           />
         </div>
