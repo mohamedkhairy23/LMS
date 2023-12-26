@@ -21,7 +21,7 @@ userRouter.post("/register", register);
 userRouter.post("/activate-user", activateUser);
 userRouter.post("/login", login);
 userRouter.get("/logout", isAuthenticated, logout);
-userRouter.get("/refresh", isAuthenticated, updateAccessToken);
+userRouter.get("/refresh", updateAccessToken);
 userRouter.get("/me", isAuthenticated, getUserInfo);
 userRouter.post("/social-auth", socialAuth);
 userRouter.put("/update-user-info", isAuthenticated, updateUserInfo);
