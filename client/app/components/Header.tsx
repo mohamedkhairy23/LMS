@@ -33,10 +33,10 @@ const Header: FC<Props> = ({ activeItem, setOpen, open, route, setRoute }) => {
   const { data } = useSession();
   const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
 
-  const [logout, setLogout] = useState(false);
-  const {} = useLogOutQuery(undefined, {
-    skip: !logout ? true : false,
-  });
+  // const [logout, setLogout] = useState(false);
+  // const {} = useLogOutQuery(undefined, {
+  //   skip: !logout ? true : false,
+  // });
 
   useEffect(() => {
     if (!user) {
@@ -55,10 +55,10 @@ const Header: FC<Props> = ({ activeItem, setOpen, open, route, setRoute }) => {
       }
     }
 
-    if (data === null) {
-      setLogout(true);
-    }
-  }, [data, isSuccess, socialAuth, user]);
+    // if (data === null) {
+    //   setLogout(true);
+    // }
+  }, [data, user]);
   console.log(data);
 
   if (typeof window !== "undefined") {
