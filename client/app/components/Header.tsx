@@ -59,6 +59,7 @@ const Header: FC<Props> = ({ activeItem, setOpen, open, route, setRoute }) => {
     //   setLogout(true);
     // }
   }, [data, user]);
+
   console.log(data);
 
   if (typeof window !== "undefined") {
