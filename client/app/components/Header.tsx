@@ -12,7 +12,10 @@ import { useSelector } from "react-redux";
 import Image from "next/image";
 import avatar from "../../public/assets/default.png";
 import { useSession } from "next-auth/react";
-import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
+import {
+  useLogOutQuery,
+  useSocialAuthMutation,
+} from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
 
 type Props = {
@@ -30,11 +33,12 @@ const Header: FC<Props> = ({ activeItem, setOpen, open, route, setRoute }) => {
   const { data } = useSession();
   const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
 
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success("LogIn Successfully");
-    }
+  const [logout, setLogout] = useState(false);
+  const {} = useLogOutQuery(undefined, {
+    skip: !logout ? true : false,
+  });
 
+  useEffect(() => {
     if (!user) {
       if (data) {
         socialAuth({
@@ -43,6 +47,16 @@ const Header: FC<Props> = ({ activeItem, setOpen, open, route, setRoute }) => {
           avatar: data?.user?.image,
         });
       }
+    }
+
+    if (data === null) {
+      if (isSuccess) {
+        toast.success("LogIn Successfully");
+      }
+    }
+
+    if (data === null) {
+      setLogout(true);
     }
   }, [data, isSuccess, socialAuth, user]);
   console.log(data);
